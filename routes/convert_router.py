@@ -1,7 +1,6 @@
 import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).parent))
-from typing import Annotated
 import sys
 import os
 from pathlib import Path
@@ -11,7 +10,7 @@ import subprocess
 from fastapi import APIRouter
 from PIL import Image
 from fastapi import File, UploadFile, HTTPException
-from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse,  FileResponse
+from fastapi.responses import RedirectResponse,  FileResponse, JSONResponse
 from database.database import insert_data_into_database
 folder_path= str(Path(__file__).parent.parent)
 
@@ -23,6 +22,7 @@ folder_path= str(Path(__file__).parent.parent)
 #     device=ModelConfig.DEVICE
 # )
 router = APIRouter()
+
 @router.post("/convertvideo/")
 async def convertvideo( user_id:int,
                        image: UploadFile = File(...),
@@ -73,14 +73,9 @@ async def convertvideo( user_id:int,
     # insert_data_into_database()
     output = '/home/viet/workspace/facefusion/media/user_id_0222/00000/processedvideo_0222_00000.mp4'
     link_url = f'/convertfile/filevideo/?path={output}'
-    return RedirectResponse(link_url)
+    return JSONResponse(data = link_url)
+    # return RedirectResponse(link_url)
 
 @router.get("/filevideo/")
 async def filevideo(path: str):
     return FileResponse(path)
-@router.get("/test/")
-async def testURL():
-    # return filevideo()
-    file_path = '/home/viet/workspace/facefusion/video.mp4'
-    link_url = f'/convertfile/filevideo/?path={file_path}'
-    return RedirectResponse(link_url)
