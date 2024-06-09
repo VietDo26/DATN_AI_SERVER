@@ -12,8 +12,9 @@ from PIL import Image
 from fastapi import File, UploadFile, HTTPException
 from fastapi.responses import RedirectResponse,  FileResponse, JSONResponse
 from database.database import insert_data_into_database
-folder_path= str(Path(__file__).parent.parent)
+from utils.videoprocessing.concatenate import concatenateWarning
 
+folder_path= str(Path(__file__).parent.parent)
 
 
 # predictor = Predictor(
@@ -66,14 +67,17 @@ async def convertvideo( user_id:int,
 
     try:
         output = upload_dir_media + f'/processedvideo_{user_id:04d}_{number_order:05d}'+video.filename[index_video:]
-        print(output)
+        print('output :', output)
         subprocess.run(['python3' ,'run.py' , '--headless', f'--source={file_path_image}', f"--target={file_path_video}", f"--output={output}" ,"--execution-providers=cpu", "--frame-processors=face_swapper", "--face-swapper-model=inswapper_128_fp16"])
     except Exception as e:
         raise HTTPException(status_code=500, detail=f'Faild to convert video {e}')
     # insert_data_into_database()
-    output = '/home/viet/workspace/facefusion/media/user_id_0222/00000/processedvideo_0222_00000.mp4'
-    link_url = f'/convertfile/filevideo/?path={output}'
-    return JSONResponse(data = link_url)
+    output_final = upload_dir_media + f'/processedvideo_{user_id:04d}_{number_order:05d}_final'+video.filename[index_video:]
+    concatenateWarning(video_path=output,output_path= output_final)
+    print('output_final',output_final)
+    # output = '/home/viet/workspace/facefusion/media/user_id_0222/00000/processedvideo_0222_00000.mp4'
+    link_url = f'/convertfile/filevideo/?path={output_final}'
+    return JSONResponse(content = link_url)
     # return RedirectResponse(link_url)
 
 @router.get("/filevideo/")
