@@ -17,11 +17,6 @@ from utils.videoprocessing.concatenate import concatenateWarning
 folder_path= str(Path(__file__).parent.parent)
 
 
-# predictor = Predictor(
-#     model_name=ModelConfig.MODEL_NAME,
-#     model_weight=ModelConfig.MODEL_WEIGHT,
-#     device=ModelConfig.DEVICE
-# )
 router = APIRouter()
 
 @router.post("/convertvideo/")
@@ -75,7 +70,6 @@ async def convertvideo( user_id:int,
     output_final = upload_dir_media + f'/processedvideo_{user_id:04d}_{number_order:05d}_final'+video.filename[index_video:]
     concatenateWarning(video_path=output,output_path= output_final)
     print('output_final',output_final)
-    # output = '/home/viet/workspace/facefusion/media/user_id_0222/00000/processedvideo_0222_00000.mp4'
     link_url = f'/convertfile/filevideo/?path={output_final}'
     return JSONResponse(content = link_url)
     # return RedirectResponse(link_url)
@@ -83,3 +77,7 @@ async def convertvideo( user_id:int,
 @router.get("/filevideo/")
 async def filevideo(path: str):
     return FileResponse(path)
+
+@router.get("/testconnect/")
+async def testconnect():
+    return JSONResponse(content = "connect succes")
